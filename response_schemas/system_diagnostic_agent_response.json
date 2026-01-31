@@ -1,0 +1,157 @@
+{
+  "agent_name": "System Diagnostic Agent",
+  "agent_id": "697e1751066158e77fde5fcb",
+  "agent_purpose": "diagnostic_analysis",
+  "description": "Response schema for multi-agent system diagnostic analysis with health score, categorized diagnostics, and priority actions",
+  "response_schema": {
+    "overall_health_score": "number",
+    "diagnostics": [
+      {
+        "category": "string",
+        "status": "string",
+        "summary": "string",
+        "detailed_explanation": "string",
+        "recommended_fix": "string",
+        "severity": "string"
+      }
+    ],
+    "priority_actions": [
+      "string"
+    ]
+  },
+  "example_response": {
+    "overall_health_score": 85,
+    "diagnostics": [
+      {
+        "category": "System Prompt Issues",
+        "status": "Warning",
+        "summary": "Potential clarity issue in instructions.",
+        "detailed_explanation": "The instructions for system responses could be misinterpreted due to ambiguous phrasing, impacting agent performance.",
+        "recommended_fix": "Revise the system prompt for clearer directives. For example, instead of 'Analyze agent system configurations', specify the expected outcomes such as 'Identify and report on agent performance metrics'.",
+        "severity": "Medium"
+      },
+      {
+        "category": "Architecture Problems",
+        "status": "Pass",
+        "summary": "Agent hierarchy appears well-structured.",
+        "detailed_explanation": "No significant issues with agent delegation or hierarchy were found.",
+        "recommended_fix": "Continue monitoring for future changes that may require restructuring.",
+        "severity": "Low"
+      },
+      {
+        "category": "Chain of Thought Gaps",
+        "status": "Warning",
+        "summary": "Missing intermediate logic flows.",
+        "detailed_explanation": "Some agents provide outputs without showing the reasoning steps taken to reach those conclusions.",
+        "recommended_fix": "Encourage agents to output reasoning processes. For instance, include comments or intermediate steps alongside final outputs.",
+        "severity": "Medium"
+      },
+      {
+        "category": "Output Format Mismatches",
+        "status": "Pass",
+        "summary": "Output format is as expected.",
+        "detailed_explanation": "The structure of outputs aligns with specified requirements.",
+        "recommended_fix": "Maintain current formatting standards and review regularly.",
+        "severity": "Low"
+      },
+      {
+        "category": "Scope & Boundaries",
+        "status": "Warning",
+        "summary": "Some agents are overstepping their roles.",
+        "detailed_explanation": "Certain agents are attempting to perform functions outside their designated scope, leading to confusion.",
+        "recommended_fix": "Clearly define roles and responsibilities for each agent and reinforce these boundaries.",
+        "severity": "Medium"
+      },
+      {
+        "category": "Knowledge/Context Issues",
+        "status": "Issue",
+        "summary": "Outdated context affecting performance.",
+        "detailed_explanation": "Some agents are operating with outdated information that could impact decision-making.",
+        "recommended_fix": "Regularly update knowledge databases and ensure agents are aware of the latest context.",
+        "severity": "High"
+      },
+      {
+        "category": "Integration Problems",
+        "status": "Pass",
+        "summary": "Data transitions appear smooth.",
+        "detailed_explanation": "No significant data loss or errors during agent handoffs were detected.",
+        "recommended_fix": "Continue monitoring integration points for future performance evaluations.",
+        "severity": "Low"
+      }
+    ],
+    "priority_actions": [
+      "Update the system prompt for clarity.",
+      "Define agent roles and responsibilities more explicitly.",
+      "Regularly update knowledge bases to ensure agents have current context."
+    ]
+  },
+  "is_actual_tested": true,
+  "test_timestamp": "2026-01-31T14:53:25.371479",
+  "test_message_used": "Hello, provide a sample response",
+  "actual_test_response": {
+    "overall_health_score": 85,
+    "diagnostics": [
+      {
+        "category": "System Prompt Issues",
+        "status": "Warning",
+        "summary": "Potential clarity issue in instructions.",
+        "detailed_explanation": "The instructions for system responses could be misinterpreted due to ambiguous phrasing, impacting agent performance.",
+        "recommended_fix": "Revise the system prompt for clearer directives. For example, instead of 'Analyze agent system configurations', specify the expected outcomes such as 'Identify and report on agent performance metrics'.",
+        "severity": "Medium"
+      },
+      {
+        "category": "Architecture Problems",
+        "status": "Pass",
+        "summary": "Agent hierarchy appears well-structured.",
+        "detailed_explanation": "No significant issues with agent delegation or hierarchy were found.",
+        "recommended_fix": "Continue monitoring for future changes that may require restructuring.",
+        "severity": "Low"
+      },
+      {
+        "category": "Chain of Thought Gaps",
+        "status": "Warning",
+        "summary": "Missing intermediate logic flows.",
+        "detailed_explanation": "Some agents provide outputs without showing the reasoning steps taken to reach those conclusions.",
+        "recommended_fix": "Encourage agents to output reasoning processes. For instance, include comments or intermediate steps alongside final outputs.",
+        "severity": "Medium"
+      },
+      {
+        "category": "Output Format Mismatches",
+        "status": "Pass",
+        "summary": "Output format is as expected.",
+        "detailed_explanation": "The structure of outputs aligns with specified requirements.",
+        "recommended_fix": "Maintain current formatting standards and review regularly.",
+        "severity": "Low"
+      },
+      {
+        "category": "Scope & Boundaries",
+        "status": "Warning",
+        "summary": "Some agents are overstepping their roles.",
+        "detailed_explanation": "Certain agents are attempting to perform functions outside their designated scope, leading to confusion.",
+        "recommended_fix": "Clearly define roles and responsibilities for each agent and reinforce these boundaries.",
+        "severity": "Medium"
+      },
+      {
+        "category": "Knowledge/Context Issues",
+        "status": "Issue",
+        "summary": "Outdated context affecting performance.",
+        "detailed_explanation": "Some agents are operating with outdated information that could impact decision-making.",
+        "recommended_fix": "Regularly update knowledge databases and ensure agents are aware of the latest context.",
+        "severity": "High"
+      },
+      {
+        "category": "Integration Problems",
+        "status": "Pass",
+        "summary": "Data transitions appear smooth.",
+        "detailed_explanation": "No significant data loss or errors during agent handoffs were detected.",
+        "recommended_fix": "Continue monitoring integration points for future performance evaluations.",
+        "severity": "Low"
+      }
+    ],
+    "priority_actions": [
+      "Update the system prompt for clarity.",
+      "Define agent roles and responsibilities more explicitly.",
+      "Regularly update knowledge bases to ensure agents have current context."
+    ]
+  }
+}
