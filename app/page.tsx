@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AgentConfigPanel } from '@/components/AgentConfigPanel'
 import { BehaviorInputPanel } from '@/components/BehaviorInputPanel'
 import { DiagnosticResultsPanel } from '@/components/DiagnosticResultsPanel'
@@ -42,6 +42,67 @@ export default function Home() {
   const [analyzing, setAnalyzing] = useState(false)
   const [promptFixes, setPromptFixes] = useState<PromptFixes | null>(null)
   const [generatingFixes, setGeneratingFixes] = useState(false)
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedAgents = localStorage.getItem('agent-debugger-agents')
+      const savedFlow = localStorage.getItem('agent-debugger-flow')
+      const savedExpected = localStorage.getItem('agent-debugger-expected')
+      const savedActual = localStorage.getItem('agent-debugger-actual')
+
+      if (savedAgents) {
+        setAgents(JSON.parse(savedAgents))
+      }
+      if (savedFlow) {
+        setFlowDescription(savedFlow)
+      }
+      if (savedExpected) {
+        setExpectedBehavior(savedExpected)
+      }
+      if (savedActual) {
+        setActualBehavior(savedActual)
+      }
+    } catch (error) {
+      console.error('Error loading from localStorage:', error)
+    }
+  }, [])
+
+  // Save agents to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('agent-debugger-agents', JSON.stringify(agents))
+    } catch (error) {
+      console.error('Error saving agents to localStorage:', error)
+    }
+  }, [agents])
+
+  // Save flow description to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('agent-debugger-flow', flowDescription)
+    } catch (error) {
+      console.error('Error saving flow to localStorage:', error)
+    }
+  }, [flowDescription])
+
+  // Save expected behavior to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('agent-debugger-expected', expectedBehavior)
+    } catch (error) {
+      console.error('Error saving expected behavior to localStorage:', error)
+    }
+  }, [expectedBehavior])
+
+  // Save actual behavior to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('agent-debugger-actual', actualBehavior)
+    } catch (error) {
+      console.error('Error saving actual behavior to localStorage:', error)
+    }
+  }, [actualBehavior])
 
   const handleAnalyze = async () => {
     if (!expectedBehavior.trim() || !actualBehavior.trim()) {
