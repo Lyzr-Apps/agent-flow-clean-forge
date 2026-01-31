@@ -231,7 +231,14 @@ ${results.priority_actions.map((a, i) => `${i + 1}. ${a}`).join('\n')}
         {/* Diagnostic Categories */}
         <div className="space-y-3">
           <h3 className="text-gray-800 font-semibold text-base">Diagnostic Categories</h3>
-          {results.diagnostics.map((diagnostic, index) => (
+          {!Array.isArray(results.diagnostics) || results.diagnostics.length === 0 ? (
+            <div className="text-center py-8 px-4 bg-amber-50 rounded-xl border-2 border-amber-200">
+              <FiAlertTriangle className="w-12 h-12 text-amber-600 mx-auto mb-3" />
+              <p className="text-gray-700 font-medium">No diagnostic categories available</p>
+              <p className="text-gray-500 text-sm mt-2">The analysis didn't return diagnostic data in the expected format.</p>
+            </div>
+          ) : (
+            results.diagnostics.map((diagnostic, index) => (
             <Collapsible
               key={index}
               open={openSections.has(diagnostic.category)}
@@ -307,7 +314,7 @@ ${results.priority_actions.map((a, i) => `${i + 1}. ${a}`).join('\n')}
                 </CollapsibleContent>
               </div>
             </Collapsible>
-          ))}
+          )))}
         </div>
       </CardContent>
     </Card>

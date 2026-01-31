@@ -97,8 +97,30 @@ Please analyze this multi-agent system and provide comprehensive diagnostics acr
       )
 
       if (result.success && result.response.result) {
-        // Parse the result directly - it should already be in the correct format
-        const diagnosticData = result.response.result as DiagnosticResponse
+        // Parse the result and handle different response structures
+        let diagnosticData: DiagnosticResponse
+        const resultData = result.response.result
+
+        // Handle case where the agent returns the data nested or directly
+        if (resultData.overall_health_score !== undefined && resultData.diagnostics) {
+          // Direct format
+          diagnosticData = resultData as DiagnosticResponse
+        } else if (resultData.data) {
+          // Nested in 'data' field
+          diagnosticData = resultData.data as DiagnosticResponse
+        } else if (resultData.result) {
+          // Nested in 'result' field
+          diagnosticData = resultData.result as DiagnosticResponse
+        } else {
+          throw new Error('Unexpected response format from diagnostic agent')
+        }
+
+        // Ensure diagnostics is an array
+        if (!Array.isArray(diagnosticData.diagnostics)) {
+          console.error('Invalid diagnostics format:', diagnosticData.diagnostics)
+          throw new Error('Diagnostics data is not in the expected array format')
+        }
+
         setDiagnosticResults(diagnosticData)
       } else {
         alert('Failed to analyze system. Please try again.')
