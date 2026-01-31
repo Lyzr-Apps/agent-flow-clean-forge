@@ -1,0 +1,43 @@
+{
+  "agent_name": "Fraud Screening Agent",
+  "agent_id": "697e601f066158e77fde62ca",
+  "agent_purpose": "fraud_assessment",
+  "description": "Response schema for fraud risk assessment with probability scoring and playbook-based recommendations",
+  "response_schema": {
+    "status": "string (success|error)",
+    "result": {
+      "response": "string",
+      "action_taken": "string (optional)",
+      "data": "object (optional, any structured data)",
+      "suggestions": [
+        "string (optional)"
+      ]
+    },
+    "metadata": {
+      "agent_name": "string",
+      "timestamp": "string (ISO)"
+    }
+  },
+  "example_response": {
+    "status": "success",
+    "result": {
+      "response": "I've completed the task you requested",
+      "action_taken": "Processed the input and generated output",
+      "data": {
+        "key": "value"
+      },
+      "suggestions": [
+        "You might also want to try X"
+      ]
+    },
+    "metadata": {
+      "agent_name": "Fraud Screening Agent",
+      "timestamp": "2025-01-15T10:30:00Z"
+    }
+  },
+  "is_actual_tested": false,
+  "test_timestamp": null,
+  "test_message_used": "Hello, provide a sample response",
+  "raw_test_response": "INTERNAL_FRAUD_SCREENING_RESPONSE\nfraud_probability: low\nreasoning: No fraud screening request was provided. This appears to be a test query. No rules from the Fraud Screening Playbook were triggered as no transaction details, amount, or customer description were submitted for analysis.\nrecommended_action: PROCEED_DEESCALATION\n\n---\n\n**Note to Orchestrator**: I did not receive a properly formatted `INTERNAL_FRAUD_SCREENING_REQUEST`. Please resubmit with the required fields:\n- Transaction ID\n- Amount\n- Customer Description\n- Supporting Details",
+  "test_error": "Response not valid JSON: Expecting value: line 1 column 1 (char 0)"
+}

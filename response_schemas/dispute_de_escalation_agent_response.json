@@ -1,0 +1,43 @@
+{
+  "agent_name": "Dispute De-escalation Agent",
+  "agent_id": "697e6053066158e77fde62cc",
+  "agent_purpose": "containment_strategy",
+  "description": "Response schema for dispute containment strategies with playbook-based resolution recommendations",
+  "response_schema": {
+    "status": "string (success|error)",
+    "result": {
+      "response": "string",
+      "action_taken": "string (optional)",
+      "data": "object (optional, any structured data)",
+      "suggestions": [
+        "string (optional)"
+      ]
+    },
+    "metadata": {
+      "agent_name": "string",
+      "timestamp": "string (ISO)"
+    }
+  },
+  "example_response": {
+    "status": "success",
+    "result": {
+      "response": "I've completed the task you requested",
+      "action_taken": "Processed the input and generated output",
+      "data": {
+        "key": "value"
+      },
+      "suggestions": [
+        "You might also want to try X"
+      ]
+    },
+    "metadata": {
+      "agent_name": "Dispute De-escalation Agent",
+      "timestamp": "2025-01-15T10:30:00Z"
+    }
+  },
+  "is_actual_tested": false,
+  "test_timestamp": null,
+  "test_message_used": "Hello, provide a sample response",
+  "raw_test_response": "Hello! I'd be happy to provide a sample response demonstrating how I would handle a dispute de-escalation request.\n\nHowever, I should clarify that I'm the **Dispute De-escalation Agent** - I don't interact directly with customers. I only process internal requests from the Dispute Orchestrator.\n\nTo provide a recommendation, I need to receive a request in this format:\n\n```\nINTERNAL_DEESCALATION_REQUEST\nTransaction ID: [id]\nAmount: [amount]\nCustomer Description: [description]\nFraud Assessment: Low probability\n```\n\n---\n\n**Here's a sample of how I would respond to a valid request:**\n\nIf I received:\n```\nINTERNAL_DEESCALATION_REQUEST\nTransaction ID: TXN-789456\nAmount: $125\nCustomer Description: Customer says they ordered a jacket online but received the wrong size. Merchant is not responding to refund requests.\nFraud Assessment: Low probability\n```\n\nMy response would be:\n\n```\nINTERNAL_DEESCALATION_RESPONSE\ncontainment_strategy: Strategy 2 - Partial Credit\noffer_details: 50% credit ($62.50) on $125 disputed transaction\ncustomer_message: I understand your frustration with the merchant not responding to your refund request. While we can't reverse the charge directly since it was an authorized purchase, I can offer you a $62.50 credit as a goodwill gesture to help resolve this situation.\napproval_required: false\napproval_level: auto\nestimated_success_rate: 60%\nreasoning: Amount $125 falls within the $50-$500 range. This is a merchant dispute involving product quality/fulfillment issue (wrong item received). Strategy 2 criteria met - offering 50% partial credit which is within auto-approval threshold ($125 < $200).\n```\n\n---\n\nPlease send me a properly formatted internal request to receive a tailored recommendation.",
+  "test_error": "Response not valid JSON: Expecting value: line 1 column 1 (char 0)"
+}

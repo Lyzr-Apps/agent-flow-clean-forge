@@ -1,0 +1,43 @@
+{
+  "agent_name": "Dispute Orchestrator Agent",
+  "agent_id": "697e5ffbd36f070193f5dcbe",
+  "agent_purpose": "dispute_orchestration",
+  "description": "Response schema for dispute orchestration workflow with case tracking and resolution status",
+  "response_schema": {
+    "status": "string (success|error)",
+    "result": {
+      "response": "string",
+      "action_taken": "string (optional)",
+      "data": "object (optional, any structured data)",
+      "suggestions": [
+        "string (optional)"
+      ]
+    },
+    "metadata": {
+      "agent_name": "string",
+      "timestamp": "string (ISO)"
+    }
+  },
+  "example_response": {
+    "status": "success",
+    "result": {
+      "response": "I've completed the task you requested",
+      "action_taken": "Processed the input and generated output",
+      "data": {
+        "key": "value"
+      },
+      "suggestions": [
+        "You might also want to try X"
+      ]
+    },
+    "metadata": {
+      "agent_name": "Dispute Orchestrator Agent",
+      "timestamp": "2025-01-15T10:30:00Z"
+    }
+  },
+  "is_actual_tested": false,
+  "test_timestamp": null,
+  "test_message_used": "Hello, provide a sample response",
+  "raw_test_response": "Hello! I'd be happy to help you with a banking dispute. Let me show you how I can assist.\n\n---\n\n**Sample Interaction:**\n\n---\n\n**Me:** Hello! I'm here to help you with any transaction disputes. I'm sorry to hear you may be experiencing an issue with your account. Could you please tell me more about the transaction you'd like to dispute?\n\nI'll need a few details to get started:\n- **Transaction ID** (if available)\n- **Transaction amount**\n- **Date of the transaction**\n- **A brief description of what happened**\n\n---\n\n**Example Customer Response:** \"I noticed a charge of $247.50 on my account from 'ELECTRONICS PLUS' on March 15th. I never made this purchase and I've never heard of this merchant. Transaction ID is TXN-88421.\"\n\n---\n\n**My Response:** Thank you for bringing this to my attention. I completely understand how concerning it is to see an unfamiliar charge on your account.\n\nLet me confirm the details:\n- **Transaction ID:** TXN-88421\n- **Amount:** $247.50\n- **Merchant:** ELECTRONICS PLUS\n- **Date:** March 15th\n- **Issue:** You don't recognize this transaction\n\nI'm going to review this right away. Because this appears to be an unauthorized charge, our fraud investigation team will need to look into this. You should hear back from us within **24-48 hours** with an update.\n\nIn the meantime, would you like me to place a temporary hold on your card to prevent any additional unauthorized charges?\n\n---\n\nIs there a specific dispute you'd like help with today? I'm ready to assist!",
+  "test_error": "Response not valid JSON: Expecting value: line 1 column 1 (char 0)"
+}
