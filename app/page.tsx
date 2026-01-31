@@ -29,6 +29,10 @@ export interface DiagnosticResponse {
   priority_actions: string[]
 }
 
+export interface PromptFixes {
+  [agentId: string]: string
+}
+
 export default function Home() {
   const [agents, setAgents] = useState<Agent[]>([])
   const [flowDescription, setFlowDescription] = useState('')
@@ -36,6 +40,8 @@ export default function Home() {
   const [actualBehavior, setActualBehavior] = useState('')
   const [diagnosticResults, setDiagnosticResults] = useState<DiagnosticResponse | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
+  const [promptFixes, setPromptFixes] = useState<PromptFixes | null>(null)
+  const [generatingFixes, setGeneratingFixes] = useState(false)
 
   const handleAnalyze = async () => {
     if (!expectedBehavior.trim() || !actualBehavior.trim()) {
@@ -50,6 +56,7 @@ export default function Home() {
 
     setAnalyzing(true)
     setDiagnosticResults(null)
+    setPromptFixes(null)
 
     // Build the agent hierarchy description
     const agentHierarchy = agents.map(agent => {
@@ -105,6 +112,37 @@ Please analyze this multi-agent system and provide comprehensive diagnostics acr
     }
   }
 
+  const handleGeneratePromptFixes = async () => {
+    if (!diagnosticResults) return
+
+    setGeneratingFixes(true)
+
+    try {
+      const response = await fetch('/api/generate-prompt-fixes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          agents,
+          diagnosticResults
+        })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setPromptFixes(data.promptFixes)
+      } else {
+        alert('Failed to generate prompt fixes. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error generating prompt fixes:', error)
+      alert('An error occurred while generating fixes. Please try again.')
+    } finally {
+      setGeneratingFixes(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto p-6">
@@ -117,14 +155,13 @@ Please analyze this multi-agent system and provide comprehensive diagnostics acr
           </p>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Agent Configuration */}
-          <div className="lg:col-span-1">
-            <AgentConfigPanel agents={agents} setAgents={setAgents} />
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column */}
+          <div className="space-y-6">
+            {/* Agent Configuration */}
+            <AgentConfigPanel agents={agents} setAgents={setAgents} promptFixes={promptFixes} />
 
-          {/* Center Panel - Behavior Input */}
-          <div className="lg:col-span-1">
+            {/* Behavior Input */}
             <BehaviorInputPanel
               flowDescription={flowDescription}
               setFlowDescription={setFlowDescription}
@@ -137,11 +174,13 @@ Please analyze this multi-agent system and provide comprehensive diagnostics acr
             />
           </div>
 
-          {/* Right Panel - Diagnostic Results */}
-          <div className="lg:col-span-1">
+          {/* Right Column - Diagnostic Results */}
+          <div>
             <DiagnosticResultsPanel
               results={diagnosticResults}
               analyzing={analyzing}
+              onGenerateFixes={handleGeneratePromptFixes}
+              generatingFixes={generatingFixes}
             />
           </div>
         </div>

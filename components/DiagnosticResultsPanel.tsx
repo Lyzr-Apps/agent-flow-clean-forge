@@ -7,15 +7,17 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Spinner } from '@/components/ui/spinner'
-import { FiChevronDown, FiChevronUp, FiCopy, FiCheckCircle, FiAlertTriangle, FiXCircle } from 'react-icons/fi'
+import { FiChevronDown, FiChevronUp, FiCopy, FiCheckCircle, FiAlertTriangle, FiXCircle, FiTool } from 'react-icons/fi'
 import { copyToClipboard } from '@/lib/clipboard'
 
 interface DiagnosticResultsPanelProps {
   results: DiagnosticResponse | null
   analyzing: boolean
+  onGenerateFixes?: () => void
+  generatingFixes?: boolean
 }
 
-export function DiagnosticResultsPanel({ results, analyzing }: DiagnosticResultsPanelProps) {
+export function DiagnosticResultsPanel({ results, analyzing, onGenerateFixes, generatingFixes }: DiagnosticResultsPanelProps) {
   const [openSections, setOpenSections] = useState<Set<string>>(new Set())
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
 
@@ -151,24 +153,26 @@ ${results.priority_actions.map((a, i) => `${i + 1}. ${a}`).join('\n')}
       <CardHeader className="border-b border-purple-100">
         <div className="flex items-center justify-between">
           <CardTitle className="text-gray-800 text-xl">Diagnostic Results</CardTitle>
-          <Button
-            onClick={handleCopyAllRecommendations}
-            size="sm"
-            variant="outline"
-            className="border-indigo-300 text-indigo-700 hover:bg-indigo-50"
-          >
-            {copiedIndex === -1 ? (
-              <>
-                <FiCheckCircle className="w-4 h-4 mr-2" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <FiCopy className="w-4 h-4 mr-2" />
-                Copy Report
-              </>
-            )}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={handleCopyAllRecommendations}
+              size="sm"
+              variant="outline"
+              className="border-indigo-300 text-indigo-700 hover:bg-indigo-50"
+            >
+              {copiedIndex === -1 ? (
+                <>
+                  <FiCheckCircle className="w-4 h-4 mr-2" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <FiCopy className="w-4 h-4 mr-2" />
+                  Copy Report
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-5 pt-6">
@@ -182,6 +186,27 @@ ${results.priority_actions.map((a, i) => `${i + 1}. ${a}`).join('\n')}
             <p className="text-gray-500 text-sm">out of 100</p>
           </div>
         </div>
+
+        {/* Generate Prompt Fixes Button */}
+        {onGenerateFixes && (
+          <Button
+            onClick={onGenerateFixes}
+            disabled={generatingFixes}
+            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-5 shadow-lg disabled:opacity-50"
+          >
+            {generatingFixes ? (
+              <>
+                <Spinner className="w-5 h-5 mr-2" />
+                Generating Fixes...
+              </>
+            ) : (
+              <>
+                <FiTool className="w-5 h-5 mr-2" />
+                Generate System Prompt Fixes
+              </>
+            )}
+          </Button>
+        )}
 
         {/* Priority Actions */}
         {results.priority_actions && results.priority_actions.length > 0 && (

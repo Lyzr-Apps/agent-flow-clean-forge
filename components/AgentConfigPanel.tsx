@@ -10,14 +10,17 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { FiPlus, FiTrash2, FiEdit2, FiFileText } from 'react-icons/fi'
+import { FiPlus, FiTrash2, FiEdit2, FiFileText, FiCopy, FiCheckCircle } from 'react-icons/fi'
+import { copyToClipboard } from '@/lib/clipboard'
+import { PromptFixes } from '@/app/page'
 
 interface AgentConfigPanelProps {
   agents: Agent[]
   setAgents: (agents: Agent[]) => void
+  promptFixes?: PromptFixes | null
 }
 
-export function AgentConfigPanel({ agents, setAgents }: AgentConfigPanelProps) {
+export function AgentConfigPanel({ agents, setAgents, promptFixes }: AgentConfigPanelProps) {
   const [showForm, setShowForm] = useState(false)
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null)
   const [formData, setFormData] = useState({
@@ -26,6 +29,7 @@ export function AgentConfigPanel({ agents, setAgents }: AgentConfigPanelProps) {
     parentId: '',
     systemPrompt: ''
   })
+  const [copiedAgentId, setCopiedAgentId] = useState<string | null>(null)
 
   const majorAgents = agents.filter(a => a.type === 'major')
 
@@ -104,44 +108,107 @@ export function AgentConfigPanel({ agents, setAgents }: AgentConfigPanelProps) {
     setFormData({ name: '', type: 'major', parentId: '', systemPrompt: '' })
   }
 
+  const handleCopyPromptFix = async (agentId: string) => {
+    if (!promptFixes || !promptFixes[agentId]) return
+
+    const success = await copyToClipboard(promptFixes[agentId])
+    if (success) {
+      setCopiedAgentId(agentId)
+      setTimeout(() => setCopiedAgentId(null), 2000)
+    }
+  }
+
+  const handleApplyPromptFix = (agentId: string) => {
+    if (!promptFixes || !promptFixes[agentId]) return
+
+    setAgents(
+      agents.map(a =>
+        a.id === agentId
+          ? { ...a, systemPrompt: promptFixes[agentId] }
+          : a
+      )
+    )
+  }
+
   const renderAgentHierarchy = () => {
     return (
       <div className="space-y-3">
         {majorAgents.map(majorAgent => (
           <div key={majorAgent.id}>
-            <div className="flex items-center justify-between p-4 bg-white rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3 flex-1">
-                <Badge className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-0 px-3 py-1">
-                  Major
-                </Badge>
-                <div className="flex-1">
-                  <span className="font-semibold text-gray-800">{majorAgent.name}</span>
-                  {majorAgent.systemPrompt && (
-                    <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
-                      <FiFileText className="w-3 h-3" />
-                      <span className="truncate max-w-[200px]">{majorAgent.systemPrompt}</span>
-                    </div>
-                  )}
+            <div className="bg-white rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3 flex-1">
+                  <Badge className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white border-0 px-3 py-1">
+                    Major
+                  </Badge>
+                  <div className="flex-1">
+                    <span className="font-semibold text-gray-800">{majorAgent.name}</span>
+                    {majorAgent.systemPrompt && (
+                      <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
+                        <FiFileText className="w-3 h-3" />
+                        <span className="truncate max-w-[200px]">{majorAgent.systemPrompt}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleEdit(majorAgent)}
+                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  >
+                    <FiEdit2 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleDelete(majorAgent.id)}
+                    className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                  >
+                    <FiTrash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleEdit(majorAgent)}
-                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                >
-                  <FiEdit2 className="w-4 h-4" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleDelete(majorAgent.id)}
-                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                >
-                  <FiTrash2 className="w-4 h-4" />
-                </Button>
-              </div>
+
+              {/* Suggested Prompt Fix */}
+              {promptFixes && promptFixes[majorAgent.id] && (
+                <div className="border-t border-blue-100 bg-gradient-to-br from-purple-50 to-pink-50 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs font-semibold text-purple-800 flex items-center gap-1">
+                      <FiFileText className="w-3 h-3" />
+                      Suggested System Prompt
+                    </h4>
+                    <div className="flex gap-1">
+                      <Button
+                        onClick={() => handleApplyPromptFix(majorAgent.id)}
+                        size="sm"
+                        variant="outline"
+                        className="h-7 px-2 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
+                      >
+                        Apply
+                      </Button>
+                      <Button
+                        onClick={() => handleCopyPromptFix(majorAgent.id)}
+                        size="sm"
+                        variant="outline"
+                        className="h-7 px-2 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
+                      >
+                        {copiedAgentId === majorAgent.id ? (
+                          <FiCheckCircle className="w-3 h-3" />
+                        ) : (
+                          <FiCopy className="w-3 h-3" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 border border-purple-200 max-h-48 overflow-y-auto">
+                    <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono">
+                      {promptFixes[majorAgent.id]}
+                    </pre>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Sub-agents */}
@@ -149,40 +216,81 @@ export function AgentConfigPanel({ agents, setAgents }: AgentConfigPanelProps) {
               .filter(a => a.parentId === majorAgent.id)
               .map(subAgent => (
                 <div key={subAgent.id} className="ml-8 mt-2">
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="w-6 h-0.5 bg-gradient-to-r from-blue-300 to-transparent" />
-                      <Badge variant="outline" className="text-gray-600 border-gray-300 bg-white px-3 py-1">
-                        Sub
-                      </Badge>
-                      <div className="flex-1">
-                        <span className="font-medium text-gray-700 text-sm">{subAgent.name}</span>
-                        {subAgent.systemPrompt && (
-                          <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
-                            <FiFileText className="w-3 h-3" />
-                            <span className="truncate max-w-[180px]">{subAgent.systemPrompt}</span>
-                          </div>
-                        )}
+                  <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between p-4">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-6 h-0.5 bg-gradient-to-r from-blue-300 to-transparent" />
+                        <Badge variant="outline" className="text-gray-600 border-gray-300 bg-white px-3 py-1">
+                          Sub
+                        </Badge>
+                        <div className="flex-1">
+                          <span className="font-medium text-gray-700 text-sm">{subAgent.name}</span>
+                          {subAgent.systemPrompt && (
+                            <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
+                              <FiFileText className="w-3 h-3" />
+                              <span className="truncate max-w-[180px]">{subAgent.systemPrompt}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleEdit(subAgent)}
+                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        >
+                          <FiEdit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDelete(subAgent.id)}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                        >
+                          <FiTrash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleEdit(subAgent)}
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                      >
-                        <FiEdit2 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleDelete(subAgent.id)}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                      >
-                        <FiTrash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+
+                    {/* Suggested Prompt Fix */}
+                    {promptFixes && promptFixes[subAgent.id] && (
+                      <div className="border-t border-gray-200 bg-gradient-to-br from-purple-50 to-pink-50 p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-xs font-semibold text-purple-800 flex items-center gap-1">
+                            <FiFileText className="w-3 h-3" />
+                            Suggested System Prompt
+                          </h4>
+                          <div className="flex gap-1">
+                            <Button
+                              onClick={() => handleApplyPromptFix(subAgent.id)}
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
+                            >
+                              Apply
+                            </Button>
+                            <Button
+                              onClick={() => handleCopyPromptFix(subAgent.id)}
+                              size="sm"
+                              variant="outline"
+                              className="h-7 px-2 text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
+                            >
+                              {copiedAgentId === subAgent.id ? (
+                                <FiCheckCircle className="w-3 h-3" />
+                              ) : (
+                                <FiCopy className="w-3 h-3" />
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 border border-purple-200 max-h-48 overflow-y-auto">
+                          <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono">
+                            {promptFixes[subAgent.id]}
+                          </pre>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
