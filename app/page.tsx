@@ -11,6 +11,7 @@ export interface Agent {
   name: string
   type: 'major' | 'sub'
   parentId?: string
+  systemPrompt?: string
 }
 
 export interface DiagnosticResult {
@@ -56,7 +57,8 @@ export default function Home() {
       return {
         name: agent.name,
         type: agent.type,
-        parent: parentAgent?.name || null
+        parent: parentAgent?.name || null,
+        systemPrompt: agent.systemPrompt || 'Not provided'
       }
     })
 
@@ -104,11 +106,13 @@ Please analyze this multi-agent system and provide comprehensive diagnostics acr
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a2e] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto p-6">
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-[#4361ee] mb-2">Agent System Debugger</h1>
-          <p className="text-gray-400">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+            Agent System Debugger
+          </h1>
+          <p className="text-gray-600 text-lg">
             Diagnostic tool for troubleshooting multi-agent systems
           </p>
         </header>
